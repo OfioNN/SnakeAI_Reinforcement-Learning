@@ -1,0 +1,9 @@
+Zainstaluj python wersja 3.9.13
+python -m venv [nazwa środowiska]
+W środowisku:
+python -m pip install --upgrade pip
+pip install mlagents
+pip3 install torch~=1.13.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip install protobuf==3.20.3
+
+mlagents-learn --help / mlagents-learn -h
