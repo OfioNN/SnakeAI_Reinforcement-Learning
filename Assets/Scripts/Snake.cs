@@ -7,6 +7,7 @@ using Unity.MLAgents.Sensors;
 using Unity.VisualScripting;
 using JetBrains.Annotations;
 using static UnityEngine.Rendering.HableCurve;
+using System.Linq;
 
 public class SnakeAgent : Agent {
 
@@ -26,6 +27,7 @@ public class SnakeAgent : Agent {
 
     // Lista czêœci wê¿a i Prefab ogona
     public List<Transform> segments;
+    public List<Vector2Int> positionGrids;
     public Transform segmentPrefab;
 
     // Poruszanie siê wê¿a i jego pozycja
@@ -68,7 +70,9 @@ public class SnakeAgent : Agent {
         state = State.Alive;
 
         segments = new List<Transform>(); 
+        positionGrids = new List<Vector2Int>();
         segments.Add(this.transform);
+        positionGrids.Add(gridPosition);
 
     }
 
@@ -177,6 +181,7 @@ public class SnakeAgent : Agent {
 
             for (int i = segments.Count - 1; i > 0; i--) {
                 segments[i].localPosition = segments[i - 1].localPosition;
+                positionGrids[i] = new Vector2Int((int)segments[i].localPosition.x, (int)segments[i].localPosition.y);
             }
 
             transform.localPosition = new Vector3(gridPosition.x, gridPosition.y);
@@ -206,7 +211,6 @@ public class SnakeAgent : Agent {
     private void Grow() {
         // Kopiuj Prefab ogona, ustaw rodzica i zapisz do zmiennej segment
         Transform segment = Instantiate(this.segmentPrefab, gameHandler.transform);
-
         // Je¿eli Lista jest mniejsza, albo równa 1, wy³¹cz kolizjê na Prefabie (g³owa = 1, pierwsza czêœæ ogona = 2 elemety)
         /*
         if (segments.Count <= 1) {
@@ -215,8 +219,11 @@ public class SnakeAgent : Agent {
         */
         segment.position = segments[segments.Count - 1].position; // Ustawienie pozycji kopii Prefaba na ostatni¹ pozycjê
 
-        
+        Vector2Int grid = new Vector2Int((int)segment.localPosition.x, (int)segment.localPosition.y);
+
+
         segments.Add(segment); // Dodanie czêœci do Listy (segments)
+        positionGrids.Add(grid);
 
         // Wywo³anie funkcji EnableSegmentBox po czasie gridMoveTimer * Time.deltaTime --> 0.25f * 0.01f = czas w sekundach
         // --> Time.deltaTime = 1/FPS (np.1/100 = 0.01s) 
@@ -242,6 +249,15 @@ public class SnakeAgent : Agent {
             segments.Add(Instantiate(this.segmentPrefab, gameHandler.transform));
         }
         */
+    }
+
+
+    public List<Vector2Int> GetAllSegmentsPosition() {
+
+        List <Vector2Int> gridPositionList = new List<Vector2Int>() { gridPosition };
+        gridPositionList.AddRange(positionGrids);
+        return gridPositionList;
+
     }
 
 

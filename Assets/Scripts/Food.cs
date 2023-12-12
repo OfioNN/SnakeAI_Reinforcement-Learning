@@ -14,10 +14,10 @@ public class Food : MonoBehaviour {
 
     private void RandomizePosition() {
 
-            do {
-                foodGridPosition = new Vector2Int(UnityEngine.Random.Range(-4, 4), UnityEngine.Random.Range(-4, 4));
+        do {
+            foodGridPosition = new Vector2Int(UnityEngine.Random.Range(-4, 4), UnityEngine.Random.Range(-4, 4));
                 // Debug.Log("FOOD: " + foodGridPosition);
-            } while (snake.gridPosition == foodGridPosition || (foodGridPosition.x == 0 && foodGridPosition.y == 0));
+        } while (snake.GetAllSegmentsPosition().IndexOf(foodGridPosition) != -1);
         
         transform.localPosition = new Vector3(foodGridPosition.x, foodGridPosition.y, 0);
     }
