@@ -7,6 +7,8 @@ TagManager:
   - Goal
   - Wall
   - Food
+  - Plansza
+  - Tail
   layers:
   - Default
   - TransparentFX

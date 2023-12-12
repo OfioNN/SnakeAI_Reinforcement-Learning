@@ -19,9 +19,6 @@ public class Food : MonoBehaviour {
                 // Debug.Log("FOOD: " + foodGridPosition);
             } while (snake.gridPosition == foodGridPosition || (foodGridPosition.x == 0 && foodGridPosition.y == 0));
         
-
-        
-
         transform.localPosition = new Vector3(foodGridPosition.x, foodGridPosition.y, 0);
     }
 
