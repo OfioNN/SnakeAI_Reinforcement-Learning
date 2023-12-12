@@ -51,6 +51,12 @@ public class SnakeAgent : Agent {
     // Pozycja celu do zabrania
     [SerializeField] private Transform food;
 
+    // Walls
+    [SerializeField] private Transform WallR;
+    [SerializeField] private Transform WallL;
+    [SerializeField] private Transform WallU;
+    [SerializeField] private Transform WallD;
+
     // Funkcja pobieraj¹ca skrypt levelGrid
     public void Setup(LevelGrid levelGrid) {
         this.levelGrid = levelGrid;
@@ -73,7 +79,8 @@ public class SnakeAgent : Agent {
         positionGrids = new List<Vector2Int>();
         segments.Add(this.transform);
         positionGrids.Add(gridPosition);
-
+        InitialSize();
+        InitialSize();
     }
 
     private void Update() {
@@ -91,8 +98,20 @@ public class SnakeAgent : Agent {
 
     // Zbieranie informacji
     public override void CollectObservations(VectorSensor sensor) {
-        sensor.AddObservation(transform.localPosition);
-        sensor.AddObservation(food.transform.localPosition);
+        sensor.AddObservation(transform.localPosition); // Snake Head Position
+        sensor.AddObservation(food.transform.localPosition); // Target Position
+
+        sensor.AddObservation(WallR.transform.localScale); // Wall Right Scale
+        sensor.AddObservation(WallL.transform.localScale); // Wall Left Scale
+        sensor.AddObservation(WallU.transform.localScale); // Wall Up Scale 
+        sensor.AddObservation(WallD.transform.localScale); // Wall Down Scale
+
+        sensor.AddObservation(WallD.transform.localPosition); // Wall Right Position
+        sensor.AddObservation(WallD.transform.localPosition); // Wall Left Position
+        sensor.AddObservation(WallD.transform.localPosition); // Wall Up Position
+        sensor.AddObservation(WallD.transform.localPosition); // Wall Down Position
+
+        // 10 * 3 = 30 Observation
     }
 
     // Podejmowanie akcji przez Agenta
@@ -203,7 +222,10 @@ public class SnakeAgent : Agent {
 
     private void InitialSize() {
         Transform initialSegments = Instantiate(this.segmentPrefab, gameHandler.transform);
+        initialSegments.GetComponent<BoxCollider2D>().enabled = false;
         initialSegments.position = segments[segments.Count - 1].position;
+        Vector2Int grid = new Vector2Int((int)initialSegments.localPosition.x, (int)initialSegments.localPosition.y);
+        positionGrids.Add(grid);
         segments.Add(initialSegments);
     }
 
@@ -271,6 +293,11 @@ public class SnakeAgent : Agent {
 
         else if (collision.TryGetComponent<Wall>(out Wall wall)) {
             Debug.Log("WALL");
+            AddReward(-5);
+            RestartGame();
+        }
+        else if(collision.tag == "Tail") {
+            Debug.Log("TAIL");
             AddReward(-1);
             RestartGame();
         }
